@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: database
 #  namespace: hw5
+  labels:
+    app: database
 spec:
   ports:
   - port: 5432

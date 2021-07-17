@@ -16,7 +16,7 @@ spec:
       labels:
         app: redmine
     spec:
-      hostNetwork: true
+#      hostNetwork: true
       containers:
       - image: redmine:4.1.1
         name: redmine

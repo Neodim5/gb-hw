@@ -10,5 +10,5 @@ spec:
       paths:
       - backend:
           serviceName: srv-redmine
-#          servicePort: 3000
-          servicePort: 80
+          servicePort: 3000
+#          servicePort: 80

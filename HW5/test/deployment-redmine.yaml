@@ -11,12 +11,17 @@ spec:
   selector:
     matchLabels:
       app: redmine
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
   template:
     metadata:
       labels:
         app: redmine
     spec:
-      hostNetwork: true
+#      hostNetwork: true
       containers:
       - image: redmine:4.1.1
         name: redmine
