@@ -15,8 +15,7 @@ spec:
         app: prometheus
     spec:
       serviceAccount: prometheus
-      terminationGracePeriodSeconds: 10
-      serviceName: prometheus
+      terminationGracePeriodSeconds: 30
 
       initContainers:
       - image: busybox
@@ -29,43 +28,13 @@ spec:
       containers:
         - name: prometheus
           image: prom/prometheus:v2.19.2
-
-          env:
-            - name: MY_POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-            - name: RABBITMQ_USE_LONGNAME
-              value: "true"
-            - name: RABBITMQ_NODENAME
-              value: "rabbit@$(MY_POD_IP)"
-            - name: K8S_SERVICE_NAME
-              value: "prometheus"
-            - name: RABBITMQ_ERLANG_COOKIE
-              value: "mycookie"
-
           ports:
             - name: prometheus
               protocol: TCP
               containerPort: 9090
 
-
-          livenessProbe:
-            exec:
-              command: ["rabbitmqctl", "status"]
-            initialDelaySeconds: 60
-            periodSeconds: 60
-            timeoutSeconds: 15
-          readinessProbe:
-            exec:
-              command: ["rabbitmqctl", "status"]
-            initialDelaySeconds: 20
-            periodSeconds: 60
-            timeoutSeconds: 10
-          imagePullPolicy: Always
-
           volumeMounts:
-            - name: prometheus-config
+            - name: config-volume
               mountPath: /etc/prometheus
             - name: prometheus-data
               mountPath: /prometheus
@@ -77,21 +46,19 @@ spec:
               - key: prometheus.yml
                 path: prometheus.yml
 
-#              - key: enabled_plugins
-#                path: enabled_plugins
 
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values:
-                        - prometheus
-                topologyKey: kubernetes.io/hostname
+#      affinity:
+#        podAntiAffinity:
+#          preferredDuringSchedulingIgnoredDuringExecution:
+#            - weight: 100
+#              podAffinityTerm:
+#                labelSelector:
+#                  matchExpressions:
+#                    - key: app
+#                      operator: In
+#                      values:
+#                        - prometheus
+#                topologyKey: kubernetes.io/hostname
   volumeClaimTemplates:
     - metadata:
         name: prometheus-data
